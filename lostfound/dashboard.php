@@ -26,9 +26,9 @@ foreach ([
 // ===================
 $actions = [
     ['Browse Items',       'Search lost and found items posted by others.', 'items.php',      true],
-    ['Report Lost Item',   'Tell us about something you lost.',             'lost_add.php',   false],
-    ['Report Found Item',  'Post something you found so its owner can claim it.', 'found_add.php', false],
-    ['My Reports',         'View, update or delete your own reports.',      'my_reports.php', false],
+    ['Report Lost Item',   'Tell us about something you lost.',             'lost_add.php',   true],
+    ['Report Found Item',  'Post something you found so its owner can claim it.', 'found_add.php', true],
+    ['My Reports',         'View, update or delete your own reports.',      'my_reports.php', true],
 ];
 
 $pageTitle = 'Dashboard';

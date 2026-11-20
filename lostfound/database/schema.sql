@@ -84,6 +84,7 @@ CREATE TABLE Found_Item (
 );
 
 -- ---------- CLAIM ----------
+-- ---------- CLAIM ----------
 CREATE TABLE Claim (
   claim_id          INT AUTO_INCREMENT PRIMARY KEY,
   found_item_id     INT NOT NULL,
@@ -92,6 +93,7 @@ CREATE TABLE Claim (
   claim_description TEXT NOT NULL,                -- proof of ownership
   date_submitted    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   claim_status      ENUM('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
+  UNIQUE KEY uq_claim_user_item (found_item_id, user_id), -- Only claim once rule
   FOREIGN KEY (found_item_id) REFERENCES Found_Item(found_item_id) ON DELETE RESTRICT,
   FOREIGN KEY (user_id)       REFERENCES `User`(user_id)           ON DELETE RESTRICT,
   FOREIGN KEY (admin_id)      REFERENCES Admin(admin_id)           ON DELETE SET NULL

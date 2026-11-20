@@ -13,7 +13,7 @@ $id  = (int)($_GET['id'] ?? 0);
 
 // Switch this to true when claims.php exists (step 7, View Claim Status).
 // Until then the user is sent back to the item page, which already shows the claim status.
-$claimsPageReady = false;
+$claimsPageReady = true;
 
 // ===================
 // FETCH THE FOUND ITEM BEING CLAIMED
