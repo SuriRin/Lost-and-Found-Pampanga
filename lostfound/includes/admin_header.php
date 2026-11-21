@@ -20,7 +20,7 @@ $pageTitle = $pageTitle ?? 'Admin';
   <a class="brand" href="<?= BASE_URL ?>/admin/dashboard.php">Lost and Found <span>Hub</span> <span class="badge">Admin</span></a>
   <div class="links">
     <?php if (is_admin_logged_in()): ?>
-      <a href="<?= BASE_URL ?>/admin/dashboard.php">Dashboard</a>
+      <!-- <a href="<?= BASE_URL ?>/admin/dashboard.php">Dashboard</a> -->
       <a href="<?= BASE_URL ?>/admin/reports.php">Reports</a>
       <a href="<?= BASE_URL ?>/admin/claims.php">Claims</a>
       <span class="who"><?= e($_SESSION['admin_name']) ?></span>

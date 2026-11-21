@@ -29,6 +29,7 @@ $actions = [
     ['Report Lost Item',   'Tell us about something you lost.',             'lost_add.php',   true],
     ['Report Found Item',  'Post something you found so its owner can claim it.', 'found_add.php', true],
     ['My Reports',         'View, update or delete your own reports.',      'my_reports.php', true],
+    ['My Claims',          'Track the claims you submitted and see if they were approved.', 'claims.php', true],
 ];
 
 $pageTitle = 'Dashboard';

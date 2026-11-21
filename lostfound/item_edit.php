@@ -3,7 +3,10 @@
 //    flowchart: My Reports -> View and Manage Own Reports (edit)
 //    Business rule 3: a report belongs to the user who created it,
 //    so only the owner can edit it.
-//    Locked when: the report is already resolved, or a found item already has claims.
+//    Business rule: a user can update the status of a lost item to Found or Cancelled,
+//    and can set it back to Lost if that was a mistake.
+//    Locked when: a lost report is Claimed, a found item is no longer Available,
+//    or a found item already has claims.
 
 require __DIR__ . '/includes/config.php';
 require_login();
@@ -17,6 +20,10 @@ $tables = [
     'Lost'  => ['table' => 'Lost_Item',  'id' => 'lost_item_id',  'date' => 'date_lost',  'open' => 'Lost'],
     'Found' => ['table' => 'Found_Item', 'id' => 'found_item_id', 'date' => 'date_found', 'open' => 'Available'],
 ];
+
+// Statuses a user may set on their own lost report. Going back to Lost reopens the
+// report, which covers a false "Found". Anything else (for example Claimed) stays locked.
+$lostStatuses = ['Lost', 'Found', 'Cancelled'];
 
 // Image upload settings (same as the report forms)
 $maxImageBytes = 2 * 1024 * 1024;                        // 2 MB
@@ -59,9 +66,15 @@ if (!$row) {
 // $locked holds the reason when the answer is no.
 // ===================
 $locked = null;
-if ($row['status'] !== $t['open']) {
+if ($type === 'Lost') {
+    // A lost report stays editable while Lost, Found or Cancelled,
+    // so a wrong "Found" can be undone. Claimed (set by admin) stays locked.
+    if (!in_array($row['status'], $lostStatuses, true)) {
+        $locked = "This report is already marked as " . strtolower($row['status']) . ", so it can't be edited.";
+    }
+} elseif ($row['status'] !== $t['open']) {
     $locked = "This report is already marked as " . strtolower($row['status']) . ", so it can't be edited.";
-} elseif ($type === 'Found') {
+} else {
     $chk = $pdo->prepare("SELECT COUNT(*) FROM Claim WHERE found_item_id = ?");
     $chk->execute([$id]);
     if ((int)$chk->fetchColumn() > 0) {
@@ -136,6 +149,16 @@ if (!$locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "Description must be 1000 characters or less.";
         }
 
+        // Status: the owner can set a lost report to Lost, Found or Cancelled.
+        // Anything else (for example a tampered "Claimed") keeps the current status.
+        $newStatus = $row['status'];
+        if ($type === 'Lost') {
+            $picked = $_POST['status'] ?? $row['status'];
+            if (in_array($picked, $lostStatuses, true)) {
+                $newStatus = $picked;
+            }
+        }
+
         // New picture is optional. Check it before saving anything.
         $imageExt = null;
         $file = $_FILES['image'] ?? null;
@@ -185,7 +208,7 @@ if (!$locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare(
                         "UPDATE {$t['table']}
                          SET category_id = ?, location_id = ?, item_name = ?,
-                             description = ?, {$t['date']} = ?, image = ?
+                             description = ?, {$t['date']} = ?, image = ?, status = ?
                          WHERE {$t['id']} = ? AND user_id = ?"
                     );
                     $stmt->execute([
@@ -195,6 +218,7 @@ if (!$locked && $_SERVER['REQUEST_METHOD'] === 'POST') {
                         $old['description'] !== '' ? $old['description'] : null,
                         $old['item_date'],
                         $imageName,
+                        $newStatus,
                         $id,
                         $uid,
                     ]);
@@ -290,6 +314,16 @@ require __DIR__ . '/includes/header.php';
       <label><?= $row['image'] ? 'Replace picture' : 'Picture' ?> <span class="muted">(optional, JPG, PNG or WEBP, up to 2 MB)</span>
         <input type="file" name="image" accept="image/jpeg,image/png,image/webp">
       </label>
+
+      <?php if ($type === 'Lost'): ?>
+        <label>Status
+          <select name="status">
+            <option value="Lost"      <?= $row['status'] === 'Lost'      ? 'selected' : '' ?>>Still lost</option>
+            <option value="Found"     <?= $row['status'] === 'Found'     ? 'selected' : '' ?>>I found it</option>
+            <option value="Cancelled" <?= $row['status'] === 'Cancelled' ? 'selected' : '' ?>>Cancel this report</option>
+          </select>
+        </label>
+      <?php endif; ?>
 
       <button class="btn">Save changes</button>
     </form>

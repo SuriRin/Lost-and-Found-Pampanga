@@ -137,7 +137,7 @@ require __DIR__ . '/includes/header.php';
       <div style="margin: 10px 0 0; display: flex; align-items: center; gap: 8px;">
         <a href="<?= BASE_URL ?>/item_view.php?type=<?= e($r['type']) ?>&amp;id=<?= (int)$r['item_id'] ?>">View</a>
 
-        <?php if ($r['is_open'] && !((int)$r['claim_count'] > 0)): ?>
+        <?php if ($r['type'] === 'Lost' ? in_array($r['status'], ['Lost', 'Found', 'Cancelled'], true) : ($r['is_open'] && (int)$r['claim_count'] === 0)): ?>
           &middot;
           <a href="<?= BASE_URL ?>/item_edit.php?type=<?= e($r['type']) ?>&amp;id=<?= (int)$r['item_id'] ?>">Edit</a>
         <?php endif; ?>

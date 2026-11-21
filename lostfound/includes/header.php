@@ -16,14 +16,14 @@ $pageTitle = $pageTitle ?? 'Lost and Found Hub';
 <!-- NAVIGATION BAR -->
 <!-- =================== -->
 <nav class="navbar">
-  <a class="brand" href="<?= BASE_URL ?>/index.php">Lost and Found <span>Hub</span></a>
+  <a class="brand" href="<?= BASE_URL ?>/index.php">Lost and Found <span>Hub</span><?php if (is_logged_in()): ?> <span class="badge">User</span><?php endif; ?></a>
   <div class="links">
     <?php if (is_logged_in()): ?>
       <!-- Links of the pages HERE!! -->
-      <a href="<?= BASE_URL ?>/dashboard.php">Dashboard</a>
-      <a href="<?= BASE_URL ?>/items.php">Browse items</a>
-      <a href="<?= BASE_URL ?>/lost_add.php">Report lost</a>
-      <a href="<?= BASE_URL ?>/found_add.php">Report found</a>
+      <!-- <a href="<?= BASE_URL ?>/dashboard.php">Dashboard</a> -->
+      <a href="<?= BASE_URL ?>/items.php">Browse items</a> 
+      <!--<a href="<?= BASE_URL ?>/lost_add.php">Report lost</a>-->
+      <!--<a href="<?= BASE_URL ?>/found_add.php">Report found</a>-->
       <a href="<?= BASE_URL ?>/my_reports.php">My reports</a>
       <a href="<?= BASE_URL ?>/claims.php">My claims</a>
       <span class="who"><?= e($_SESSION['user_name']) ?></span>
